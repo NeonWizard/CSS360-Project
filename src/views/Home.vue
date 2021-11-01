@@ -6,12 +6,7 @@
       </b-button>
     </div>
 
-    <FullCalendar
-      :events="events"
-      :options="calendarOptions"
-      defaultView="month"
-      @event-selected="openEditModal"
-    />
+    <FullCalendar :options="calendarOptions" />
 
     <b-modal
       id="add-modal"
@@ -51,15 +46,18 @@ export default {
   mixins: [requestsMixin],
   data() {
     return {
-      calendarEvent: {},
-      calendarOptions: {
-        plugins: [ dayGridPlugin, interactionPlugin ],
-        initialView: 'dayGridMonth',
-        events: this.events
-      }
+      calendarEvent: {}
     };
   },
   computed: {
+    calendarOptions() {
+      return {
+        plugins: [ dayGridPlugin, interactionPlugin ],
+        initialView: 'dayGridMonth',
+        events: this.events,
+        dateClick: this.handleDateClick
+      }
+    },
     events() {
       return this.$store.state.events;
     }
@@ -71,6 +69,9 @@ export default {
     async getEvents() {
       const response = await this.getCalendar();
       this.$store.commit("setEvents", response.data);
+    },
+    handleDateClick() {
+      alert("Date clicked!");
     },
     closeModal() {
       this.$refs["add-modal"].hide();
