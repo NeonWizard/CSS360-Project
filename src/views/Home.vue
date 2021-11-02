@@ -110,7 +110,7 @@ export default {
 
       if (title) {
         calendarApi.addEvent({
-          id: this.createEventId(),
+          id: this.currentEvents.length + 1,
           title,
           start: selectInfo.startStr,
           end: selectInfo.endStr,
