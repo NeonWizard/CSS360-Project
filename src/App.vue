@@ -1,18 +1,5 @@
 <template>
   <div id="app">
-    <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand to="/">
-        Calendar App
-      </b-navbar-brand>
-      <b-navbar-toggle target="nav-collapse" />
-      <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav>
-          <b-nav-item to="/" :active="path=='/'">
-            Home
-          </b-nav-item>
-        </b-navbar-nav>
-      </b-collapse>
-    </b-navbar>
     <router-view />
   </div>
 </template>
@@ -33,7 +20,12 @@ export default {
 </script>
 
 <style lang="scss">
-  .page {
-    padding: 20px;
+  html, body {
+    margin: 0;
+    height: 100%;
+  }
+
+  #app {
+    height: 100%;
   }
 </style>
