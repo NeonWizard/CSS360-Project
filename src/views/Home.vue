@@ -20,9 +20,9 @@
         </label>
       </div>
       <div class="demo-app-sidebar-section">
-        <h2>All Events ({{ currentEvents.length }})</h2>
+        <h2>All Events ({{ events.length }})</h2>
         <ul>
-          <li v-for="event in currentEvents" :key="event.id">
+          <li v-for="event in events" :key="event.id">
             <b>{{ event.startStr }}</b> <i>{{ event.title }}</i>
           </li>
         </ul>
@@ -48,8 +48,6 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 
-const todayStr = new Date().toISOString().replace(/T.*$/, '') // YYYY-MM-DD of today
-
 export default {
   name: "Home",
   components: {
@@ -69,19 +67,20 @@ export default {
           right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
         initialView: 'dayGridMonth',
-        initialEvents: [
-          {
-            id: 0,
-            title: 'All-day event',
-            start: todayStr
-          },
-          {
-            id: 1,
-            title: 'Timed event',
-            start: todayStr + 'T12:00:00'
-          }
-        ], // alternatively, use the `events` setting to fetch from a feed
+        // initialEvents: [
+        //   {
+        //     id: 0,
+        //     title: 'All-day event',
+        //     start: todayStr
+        //   },
+        //   {
+        //     id: 1,
+        //     title: 'Timed event',
+        //     start: todayStr + 'T12:00:00'
+        //   }
+        // ], // alternatively, use the `events` setting to fetch from a feed
         editable: true,
+        events: [],
         selectable: true,
         selectMirror: true,
         dayMaxEvents: true,
@@ -95,36 +94,52 @@ export default {
         eventRemove:
         */
       },
-      currentEvents: [],
+      created: false,
     }
+  },
+  computed: {
+    events() {
+      return this.$store.state.events.events
+    }
+  },
+  async created() {
+    await this.$store.dispatch('events/fetchEvents')
+    console.log(this.$store.state.events.events)
+    this.calendarOptions.events = this.$store.state.events.events
+
+    this.created = true
   },
   methods: {
     handleWeekendsToggle() {
       this.calendarOptions.weekends = !this.calendarOptions.weekends // update a property
     },
     handleDateSelect(selectInfo) {
-      let title = prompt('Please enter a new title for your event')
+      // let title = prompt('Please enter a new title for your event')
+      let title = 'Manual event'
       let calendarApi = selectInfo.view.calendar
 
       calendarApi.unselect() // clear date selection
 
       if (title) {
         calendarApi.addEvent({
-          id: this.currentEvents.length + 1,
+          id: this.$store.state.events.currentEventId,
           title,
           start: selectInfo.startStr,
           end: selectInfo.endStr,
           allDay: selectInfo.allDay
         })
+        this.$store.dispatch('events/incrementCurrentEventId')
       }
     },
     handleEventClick(clickInfo) {
-      if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+      // if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
         clickInfo.event.remove()
-      }
+      // }
     },
     handleEvents(events) {
-      this.currentEvents = events
+      if (!this.created) return
+      console.warn(events)
+      this.$store.commit('events/setEvents', events)
     }
   }
 }
