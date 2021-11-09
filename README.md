@@ -7,7 +7,11 @@ npm install
 
 ### Compiles and hot-reloads for development
 ```
+# serve for web browser
 npm run serve
+
+# serve desktop application
+npm run electron:serve
 ```
 
 ### Compiles and minifies for production
