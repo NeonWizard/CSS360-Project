@@ -103,7 +103,6 @@ export default {
     }
   },
   async created() {
-    await this.$store.dispatch('events/fetchEvents')
     console.log(this.$store.state.events.events)
     this.calendarOptions.events = this.$store.state.events.events
 
